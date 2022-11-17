@@ -39,6 +39,10 @@ export const resetSelection = () => ({
   type: "RESET-SELECTION",
 });
 
+export const goBack = () => ({
+  type: "GO-BACK",
+});
+
 const generateRoundsFromGroups = (groups: GroupType[]): RoundType[] => {
   // [1, 2, 3, 4, 5, 6, 7, 8] --- GroupType[]
   let groupIndex = 1;
@@ -162,14 +166,13 @@ export const initialState: NewDataState = {
   semiFinalState: [],
   thirdPlaceState: [],
   finalState: [],
-  roundIndexToDisplay: 0,
+  roundsToDisplay: [],
 };
 
 export const newDataReducer = (
   state: NewDataState = initialState,
   action: any
 ) => {
-  console.log("hmmm", action);
   switch (action.type) {
     case "ROUND":
       const groups = action.groups as GroupType[];
@@ -191,6 +194,7 @@ export const newDataReducer = (
         ...state,
         selectionState: updatedSelectionState,
         roundState: generateRoundsFromGroups(groups),
+        roundsToDisplay: ["roundState"],
       };
 
     case "QUARTER-FINAL": {
@@ -210,7 +214,7 @@ export const newDataReducer = (
         ...state,
         roundState: updatedRoundState,
         quarterFinalState: generateRounds(updatedRoundState, roundOrder),
-        roundIndexToDisplay: ++state.roundIndexToDisplay,
+        roundsToDisplay: [...state.roundsToDisplay, "quarterFinalState"],
       };
     }
     case "SEMI-FINAL": {
@@ -223,7 +227,7 @@ export const newDataReducer = (
         ...state,
         quarterFinalState: updatedQuarterFinalState,
         semiFinalState: generateRounds(updatedQuarterFinalState),
-        roundIndexToDisplay: ++state.roundIndexToDisplay,
+        roundsToDisplay: [...state.roundsToDisplay, "semiFinalState"],
       };
     }
 
@@ -262,7 +266,7 @@ export const newDataReducer = (
           },
         ],
         finalState: generateRounds(updatedSemiFinalState),
-        roundIndexToDisplay: ++state.roundIndexToDisplay,
+        roundsToDisplay: [...state.roundsToDisplay, "thirdPlaceState"],
       };
     }
 
@@ -275,7 +279,7 @@ export const newDataReducer = (
             winner: action.winner,
           },
         ],
-        roundIndexToDisplay: ++state.roundIndexToDisplay,
+        roundsToDisplay: [...state.roundsToDisplay, "finalState"],
       };
     }
     case "SAVE-FINAL": {
@@ -292,6 +296,41 @@ export const newDataReducer = (
 
     case "RESET-SELECTION": {
       return initialState;
+    }
+
+    case "GO-BACK": {
+      const rowsList = state.roundsToDisplay.slice(0, -1);
+
+      if (rowsList.length === 0) {
+        const resetSelectionState = state.selectionState.map((group) => {
+          return {
+            ...group,
+            firstFinalist: null,
+            secondFinalist: null,
+          };
+        });
+
+        return {
+          ...state,
+          selectionState: resetSelectionState,
+          roundsToDisplay: rowsList,
+        } as NewDataState;
+      }
+
+      const previousRoundRow = rowsList[rowsList.length - 1];
+
+      const resetRound = state[previousRoundRow].map((round) => {
+        return {
+          ...round,
+          winner: null,
+        };
+      });
+
+      return {
+        ...state,
+        roundsToDisplay: rowsList,
+        [previousRoundRow]: resetRound,
+      } as NewDataState;
     }
 
     default:

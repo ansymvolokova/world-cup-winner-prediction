@@ -33,15 +33,33 @@ export const Group = React.memo(
   }: GroupPropsType) => {
     const [firstFinalist, setFirstFinalist] = useState<string>("");
     const [secondFinalist, setSecondFinalist] = useState<string>("");
+    const [showAlreadySelectedError, setShowAlreadySelectedError] =
+      useState<boolean>(false);
 
     const onFirstWinnerChangeHandler = (e: SelectChangeEvent) => {
-      setFirstFinalist(e.target.value);
-      selectGroupFinalist(name, "firstFinalist", e.target.value);
+      const finalist = e.target.value;
+
+      setFirstFinalist(finalist);
+
+      if (finalist !== secondFinalist) {
+        selectGroupFinalist(name, "firstFinalist", finalist);
+        setShowAlreadySelectedError(false);
+      } else {
+        setShowAlreadySelectedError(true);
+      }
     };
 
     const onSecondWinnerChangeHandler = (e: SelectChangeEvent) => {
-      setSecondFinalist(e.target.value);
-      selectGroupFinalist(name, "secondFinalist", e.target.value);
+      const finalist = e.target.value;
+
+      setSecondFinalist(finalist);
+
+      if (finalist !== firstFinalist) {
+        selectGroupFinalist(name, "secondFinalist", finalist);
+        setShowAlreadySelectedError(false);
+      } else {
+        setShowAlreadySelectedError(true);
+      }
     };
 
     return (
@@ -73,7 +91,13 @@ export const Group = React.memo(
               </Select>
 
               {showErrors && !firstFinalist && (
-                <FormHelperText error>select first finalist</FormHelperText>
+                <FormHelperText error>Select first finalist</FormHelperText>
+              )}
+
+              {showAlreadySelectedError && (
+                <FormHelperText error>
+                  This finalist is selected in {`2${name}`}
+                </FormHelperText>
               )}
             </FormControl>
           </div>
@@ -103,6 +127,12 @@ export const Group = React.memo(
 
               {showErrors && !secondFinalist && (
                 <FormHelperText error>select second finalist</FormHelperText>
+              )}
+
+              {showAlreadySelectedError && (
+                <FormHelperText error>
+                  This finalist is selected in {`1${name}`}
+                </FormHelperText>
               )}
             </FormControl>
           </div>

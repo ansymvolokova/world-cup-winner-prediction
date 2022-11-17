@@ -1,6 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from "redux";
-import { newDataReducer } from "./new-data-reducer";
 import thunk from "redux-thunk";
+import { createLogger } from "redux-logger";
+import { newDataReducer } from "./new-data-reducer";
 import { userDataReducer } from "./user-data-reducer";
 
 const rootReducer = combineReducers({
@@ -8,6 +9,9 @@ const rootReducer = combineReducers({
   userData: userDataReducer,
 });
 
-export const store = createStore(rootReducer, applyMiddleware(thunk));
+export const store = createStore(
+  rootReducer,
+  applyMiddleware(thunk, createLogger())
+);
 
 export type AppStateType = ReturnType<typeof rootReducer>;

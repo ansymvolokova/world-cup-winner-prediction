@@ -23,7 +23,7 @@ export type DataState = {
   selectionState: GroupType[];
 } & Record<RoundStates, RoundType[]>;
 
-export type NewDataState = DataState & { roundIndexToDisplay: number };
+export type NewDataState = DataState & { roundsToDisplay: RoundStates[] };
 
 export type WinnerSelection = {
   [roundId: string]: string;

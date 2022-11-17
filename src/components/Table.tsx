@@ -52,7 +52,7 @@ export const Table = () => {
   }, [params.id, dispatch]);
 
   useEffect(() => {
-    const { roundIndexToDisplay, ...newData } = newDataState;
+    const { roundsToDisplay, ...newData } = newDataState;
     const { userName, selection: userData } = userDataState;
 
     const stateData = params.id === "new" ? newData : userData;
@@ -60,13 +60,16 @@ export const Table = () => {
     if (stateData) {
       const { selectionState, ...roundStates } = stateData;
 
-      const rows = Object.entries(roundStates).filter(([, rounds], index) => {
-        return (
-          rounds.length > 0 &&
-          ((params.id === "new" && index <= roundIndexToDisplay) ||
-            params.id !== "new")
-        );
-      }) as [RoundStates, RoundType[]][];
+      const rows = Object.entries(roundStates).filter(
+        ([roundState, rounds]) => {
+          return (
+            rounds.length > 0 &&
+            ((params.id === "new" &&
+              roundsToDisplay.includes(roundState as RoundStates)) ||
+              params.id !== "new")
+          );
+        }
+      ) as [RoundStates, RoundType[]][];
 
       setData({ selectionState, rows });
       setShowSave(params.id === "new");
@@ -78,7 +81,7 @@ export const Table = () => {
 
   const sendSelection = useCallback(
     (name: string) => {
-      const { roundIndexToDisplay, ...newData } = newDataState;
+      const { roundsToDisplay, ...newData } = newDataState;
       dispatch(submitSelection(name, newData));
       handleCloseModal();
     },

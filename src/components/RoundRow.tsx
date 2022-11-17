@@ -8,6 +8,7 @@ import {
   generateFinalAndThirdPlace,
   generateQuarterFinal,
   generateSemiFinal,
+  goBack,
   saveFinal,
   saveThirdPlace,
 } from "../store/new-data-reducer";
@@ -88,6 +89,10 @@ export const RoundRow = React.memo(
       }
     };
 
+    const handleGoBack = () => {
+      dispatch(goBack());
+    };
+
     return (
       <>
         <div className={"table"}>
@@ -109,6 +114,9 @@ export const RoundRow = React.memo(
           <div className={styles.button}>
             <Button variant="contained" onClick={save}>
               Save
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={handleGoBack}>
+              Go Back
             </Button>
           </div>
         )}
