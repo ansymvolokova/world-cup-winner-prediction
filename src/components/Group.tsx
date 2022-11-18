@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./group.module.css";
 import {
   FormControl,
@@ -35,6 +35,20 @@ export const Group = React.memo(
     const [secondFinalist, setSecondFinalist] = useState<string>("");
     const [showAlreadySelectedError, setShowAlreadySelectedError] =
       useState<boolean>(false);
+
+    useEffect(() => {
+      if (groupFirstFinalist === undefined) {
+        setFirstFinalist("");
+        selectGroupFinalist(name, "firstFinalist", null);
+      }
+    }, [groupFirstFinalist]);
+
+    useEffect(() => {
+      if (groupSecondFinalist === undefined) {
+        setSecondFinalist("");
+        selectGroupFinalist(name, "secondFinalist", null);
+      }
+    }, [groupSecondFinalist]);
 
     const onFirstWinnerChangeHandler = (e: SelectChangeEvent) => {
       const finalist = e.target.value;
